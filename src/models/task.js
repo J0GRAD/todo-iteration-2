@@ -16,7 +16,8 @@ const mongoose = require("mongoose");
 //  - name: String
 //  - subject: String (optional)
 //  - description: String (optional)
-//  - color: String (hex string)
+//  - color: String (hex string),
+//  - dueDate: String (optional)
 //  - recurrence: enum[String] (daily, monthly, etc.)
 //  - recurrenceEndDate: String (determines date it closes)
 //  - completed: Boolean (default false)
@@ -48,8 +49,17 @@ const taskSchema = new mongoose.Schema({
     },
     color: {
         type: String,
-        required: false, 
+        required: false,
         default: "#FFFFFF"
+    },
+    completed: {
+        type: Boolean,
+        required: false,
+        default: false 
+    },
+    dueDate: {
+        type: String,
+        required: false
     },
     recurrence: {
         type: String,
@@ -60,10 +70,6 @@ const taskSchema = new mongoose.Schema({
     recurrenceEndDate: {
         type: String, 
         required: false
-    },
-    completed: {
-        type: Boolean,
-        default: false 
     }
 }, { timestamps: true });
 
