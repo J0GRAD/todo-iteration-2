@@ -7,6 +7,7 @@
 // IMPORTS
 // ===============================
 const Note = require("../models/note.js");
+const utils = require("../utils/controllerFunctions.js");
 
 // ===============================
 // FUNCTIONS
@@ -15,19 +16,21 @@ const Note = require("../models/note.js");
 // CREATE
 exports.createNote = async (req, res, next) => {
     try {
-        const allowedFields = ["title", "subject", "body", "color", "pinned"];
+        const allowedFields = [
+            "title", 
+            "subject", 
+            "body", 
+            "color", 
+            "pinned"
+        ];
         const requiredFields = ["title"];
-        const missing = [];
 
-        const userId = req.user._id;
-        const fields = { userId };
-        for (const key of allowedFields) {
-            if (req.body[key] !== undefined) {
-                fields[key] = req.body[key];
-            } else if (requiredFields.includes(key)) {
-                missing.push(key);
-            }
-        }
+
+        const baseFields = { userId : req.user._id };
+        const { resultFields, missing } = utils.checkCreateFields(
+            req, allowedFields, requiredFields, baseFields
+        );
+
         if (missing.length > 0) {
             return res.status(400).json({
                 message: `Missing required fields: ${missing.join(", ")}`,
@@ -35,11 +38,12 @@ exports.createNote = async (req, res, next) => {
             });
         }
 
-        const newTask = await Task.create({
-            ...fields
-        });
+        const newNote = await Note.create(resultFields);
 
-        res.status(201).json(newTask);
+        res.status(201).json({
+            message: "Note created successfully.",
+            newNote
+        });
     } catch (error) {
         next(error);
     }
@@ -50,12 +54,9 @@ exports.updateById = async (req, res, next) => {
     try {
         const allowedFields = ["title", "subject", "description", "color", "completed", "dueDate", "recurrence", "recurrenceEndDate"];
 
-        const updates = {};
-        for (const key of allowedFields) {
-            if (req.body[key] !== undefined) {
-                updates[key] = req.body[key];
-            } 
-        }
+        const updates = utils.checkPatchFields(
+            req, allowedFields
+        );
         if (Object.keys(updates).length === 0) {
             return res.status(400).json({
                 message: "No valid fields provided for update." 
@@ -71,10 +72,13 @@ exports.updateById = async (req, res, next) => {
         )
 
         if (!updatedTask) {
-            return res.status(404).json({ message: "Task not found."});
+            return res.status(404).json({ message: "Note not found."});
         }
         
-        res.status(200).json({ message: "Task updated successfully!", updatedTask });
+        res.status(200).json({ 
+            message: "Note updated successfully.", 
+            updatedNote 
+        });
     } catch (error) {
         next(error);
     }
@@ -83,18 +87,18 @@ exports.updateById = async (req, res, next) => {
 // DELETE BY ID
 exports.deleteById = async (req, res, next) => {
     try {
-        const taskId = req.params.id;
+        const noteId = req.params.id;
         const userId = req.user._id;
         
-        const deletedTask = await Task.findOneAndDelete(
-            { _id: taskId, userId }
+        const deletedNote = await Note.findOneAndDelete(
+            { _id: noteId, userId }
         );
         
-        if (!deletedTask) {
-            return res.status(404).json({ message: "Task not found." });
+        if (!deletedNote) {
+            return res.status(404).json({ message: "Note not found." });
         }
 
-        res.status(200).json({ message: "Task deleted successfully!" });
+        res.status(200).json({ message: "Note deleted successfully." });
     } catch (error) {
         next(error);
     }

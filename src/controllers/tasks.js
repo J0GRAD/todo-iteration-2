@@ -7,6 +7,7 @@
 // IMPORTS
 // ===============================
 const Task = require("../models/task.js");
+const utils = require("../utils/controllerFuncs.js");
 
 // ===============================
 // FUNCTIONS
@@ -15,31 +16,34 @@ const Task = require("../models/task.js");
 // CREATE
 exports.createTask = async (req, res, next) => {
     try {
-        const allowedFields = ["title", "subject", "description", "color", "dueDate", "recurrence", "recurrenceEndDate"];
+        const allowedFields = [
+            "title", 
+            "subject", 
+            "description", 
+            "color", 
+            "dueDate", 
+            "recurrence", 
+            "recurrenceEndDate"
+        ];
         const requiredFields = ["title"];
-        const missing = [];
 
-        const userId = req.user._id;
-        const fields = { userId };
-        for (const key of allowedFields) {
-            if (req.body[key] !== undefined) {
-                fields[key] = req.body[key];
-            } else if (requiredFields.includes(key)) {
-                missing.push(key);
-            }
-        }
+        const baseFields = { userId: req.user._id };
+        const { resultFields, missing } = utils.checkCreateFields(
+            req, allowedFields, requiredFields, baseFields
+        );
+
         if (missing.length > 0) {
             return res.status(400).json({
                 message: `Missing required fields: ${missing.join(", ")}`,
                 missing: missing
             });
         }
+        const newTask = await Task.create(resultFields);
 
-        const newTask = await Task.create({
-            ...fields
+        res.status(201).json({
+            message: "Task created successfully.",
+            newTask
         });
-
-        res.status(201).json(newTask);
     } catch (error) {
         next(error);
     }
@@ -48,14 +52,18 @@ exports.createTask = async (req, res, next) => {
 // UPDATE BY ID
 exports.updateById = async (req, res, next) => {
     try {
-        const allowedFields = ["title", "subject", "description", "color", "completed", "dueDate", "recurrence", "recurrenceEndDate"];
+        const allowedFields = [
+            "title", 
+            "subject", 
+            "description", 
+            "color", 
+            "completed", 
+            "dueDate", 
+            "recurrence", 
+            "recurrenceEndDate"
+        ];
 
-        const updates = {};
-        for (const key of allowedFields) {
-            if (req.body[key] !== undefined) {
-                updates[key] = req.body[key];
-            } 
-        }
+        const updates = utils.checkPatchFields(req, allowedFields);
         if (Object.keys(updates).length === 0) {
             return res.status(400).json({
                 message: "No valid fields provided for update." 
@@ -69,12 +77,14 @@ exports.updateById = async (req, res, next) => {
             { $set: updates },
             { new: true }
         )
-
         if (!updatedTask) {
             return res.status(404).json({ message: "Task not found."});
         }
         
-        res.status(200).json({ message: "Task updated successfully!", updatedTask });
+        res.status(200).json({ 
+            message: "Task updated successfully.", 
+            updatedTask 
+        });
     } catch (error) {
         next(error);
     }
@@ -94,7 +104,7 @@ exports.deleteById = async (req, res, next) => {
             return res.status(404).json({ message: "Task not found." });
         }
 
-        res.status(200).json({ message: "Task deleted successfully!" });
+        res.status(200).json({ message: "Task deleted successfully." });
     } catch (error) {
         next(error);
     }
