@@ -93,9 +93,8 @@ exports.updateById = async (req, res, next) => {
 // DELETE BY ID
 exports.deleteById = async (req, res, next) => {
     try {
-        const taskId = req.params.id;
-        const userId = req.user._id;
-        
+        const taskId = req.params.id;  
+        const userId = req.user._id;      
         const deletedTask = await Task.findOneAndDelete(
             { _id: taskId, userId }
         );

@@ -19,6 +19,12 @@ const bcrypt = require("bcrypt");
 // - calendarId: ObjectId (connects calendar + events to user)
 
 const userSchema = new mongoose.Schema({
+    calendarId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Calendar",
+        required: false,
+        index: true  
+    },
     username: {
         type: String, 
         required: true, 

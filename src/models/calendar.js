@@ -1,7 +1,7 @@
 // ===============================
-// models/note.js
+// models/calendar.js
 // ===============================
-// Contains note schema, relevant methods, and exports model 
+// Contains calendar schema, relevant methods, and exports model 
 
 // ===============================
 // IMPORTS
@@ -9,17 +9,13 @@
 const mongoose = require("mongoose");
 
 // ===============================
-// NOTE SCHEMA
+// CALENDAR SCHEMA
 // ===============================
-// Note requires:
-//  - user: ObjectId (corresponding user id)
-//  - name: String
-//  - subject: String (o)
-//  - body: String (optional)
-//      - should be open to markdown
+// Calendar requires:
+//  - userId: ObjectId (corresponding user id)
 
 const calendarSchema = new mongoose.Schema({
-    user: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User", 
         required: true,

@@ -40,6 +40,26 @@ exports.checkPatchFields = (
     return { updates };
 }
 
+// ENSURE ALL FIELDS
+exports.ensureAllFields = (
+    req, requiredFields
+) => {
+    const resultFields = {}
+    const missing = []
+
+    for (key in resultFields) {
+        const value = req.body[key];
+        
+        if (value !== undefined) {
+            resultFields[key] = value;
+        } else {
+            missing.push[key];
+        }
+    }
+
+    return { resultFields, missing };
+}
+
 
 
     

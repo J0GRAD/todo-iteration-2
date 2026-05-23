@@ -1,7 +1,7 @@
 // ===============================
-// controllers/tasks.js
+// controllers/events.js
 // ===============================
-// Contains all business logic functionality for relevant routes relating to tasks.js
+// Contains all business logic functionality for relevant routes relating to events.js
 
 // ===============================
 // IMPORTS
@@ -28,8 +28,10 @@ exports.createEvent = async (req, res, next) => {
         ];
         const requiredFields = ["calendarId", "title"];
 
-        const calendarId = Calendar.findOne({ user: req.user._id });
-        const baseFields = { calendarId, userId: req.user._id };
+        const baseFields = { 
+            calendarId: req.user.calendarId, 
+            userId: req.user._id 
+        };
         const { resultFields, missing } = utils.checkCreateFields(
             req, allowedFields, requiredFields, baseFields
         );

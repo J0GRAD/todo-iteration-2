@@ -1,5 +1,5 @@
 // ===============================
-// controllers/tasks.js
+// controllers/notes.js
 // ===============================
 // Contains all business logic functionality for relevant routes relating to notes.js
 
