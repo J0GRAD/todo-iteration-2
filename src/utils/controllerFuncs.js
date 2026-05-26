@@ -3,7 +3,12 @@
 // ===============================
 // Contains functions to assist with /controllers.
 
+const Event = require("../models/event.js");
+const Task = require("../models/task.js");
+const Note = require("../models/note.js");
+
 // CHECK CREATE FIELDS
+// note: if all fields are required, set allowedFields and requiredFields to point to the same array
 exports.checkCreateFields = (
     req, allowedFields, requiredFields, baseFields
 ) => {
@@ -37,29 +42,28 @@ exports.checkPatchFields = (
         }
     }
 
-    return { updates };
+    return updates;
 }
 
-// ENSURE ALL FIELDS
-exports.ensureAllFields = (
-    req, requiredFields
+// GATHER DASHBOARD DATA
+exports.getDashboardData = async (
+    req
 ) => {
-    const resultFields = {}
-    const missing = []
+    try {
+        const userId = req.user._id;
+        const calendarId = req.user.calendarId;
 
-    for (key in resultFields) {
-        const value = req.body[key];
-        
-        if (value !== undefined) {
-            resultFields[key] = value;
-        } else {
-            missing.push[key];
-        }
+        const [events, tasks, notes] = await Promise.all([
+            Event.find({ calendarId }),
+            Task.find({ userId }),
+            Note.find({ userId })
+        ])
+
+        return { userId, events, tasks, notes };
+    } catch (error) {
+        throw error; 
     }
-
-    return { resultFields, missing };
 }
-
 
 
     

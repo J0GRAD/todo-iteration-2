@@ -21,7 +21,23 @@ const utils = require("../utils/controllerFuncs.js");
 // - create calendar
 // - log in user
 // 
-exports.register = async (req, res, next) => {
+exports.renderRegister = async (req, res, next) => {
+    try {
+        res.render("register.ejs");
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.renderLogin = async (req, res, next) => {
+    try {
+        res.render("login.ejs");
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.registerUser = async (req, res, next) => {
     try {
         const requiredFields = [
             "username",
@@ -29,12 +45,12 @@ exports.register = async (req, res, next) => {
             "password"
         ];
 
-        const { resultFields, missing } = utils.ensureAllFields(
-            req, requiredFields
+        const { resultFields, missing } = utils.checkCreateFields(
+            req, requiredFields, requiredFields, {}
         );
         if (missing.length > 0) {
             return res.status(400).json({
-                message: `Missing required fields: ${missing}`,
+                message: `Missing required fields: ${missing.join(", ")}`,
                 missing
             });
         }
@@ -47,7 +63,7 @@ exports.register = async (req, res, next) => {
             
             req.login(newUser, (error) => {
                 if (error) return next(error);
-                res.redirect("/");
+                res.redirect("/dashboard");
             });
         } catch (error) {
             await User.findByIdAndDelete(newUser._id);
@@ -91,6 +107,13 @@ exports.logoutUser = (req, res, next) => {
             message: "Failed to log out user."
         });
         
-        res.redirect("/login")
+        req.session.destroy((error) => {
+            if (error) {
+                return next(error);
+            }
+
+            res.clearCookie("connect.sid");
+            res.redirect("/login");
+        });
     });
 }

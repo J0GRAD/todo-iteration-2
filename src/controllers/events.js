@@ -17,16 +17,17 @@ const utils = require("../utils/controllerFuncs.js");
 // CREATE
 exports.createEvent = async (req, res, next) => {
     try {
-        const allowedFields = [
-            "calendarId", 
+        const allowedFields = [ 
             "taskId", 
             "title", 
             "subject", 
-            "description", 
+            "description",  
+            "color",
             "date", 
-            "color"
+            "recurrence",
+            "recurrenceEndDate"
         ];
-        const requiredFields = ["calendarId", "title"];
+        const requiredFields = ["title"];
 
         const baseFields = { 
             calendarId: req.user.calendarId, 
@@ -54,15 +55,17 @@ exports.createEvent = async (req, res, next) => {
 }
 
 // UPDATE BY ID
-exports.Event = async (req, res, next) => {
+exports.updateById = async (req, res, next) => {
     try {
         const allowedFields = [
             "taskId",
             "title", 
             "subject", 
             "description", 
-            "date", 
-            "color"
+            "color",
+            "date",
+            "recurrence",
+            "recurrenceEndDate"
         ];
 
         const updates = utils.checkPatchFields(req, allowedFields);
@@ -85,7 +88,7 @@ exports.Event = async (req, res, next) => {
         
         res.status(200).json({ 
             message: "Event updated successfully.", 
-            updatedTask 
+            updatedEvent
         });
     } catch (error) {
         next(error);

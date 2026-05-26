@@ -58,13 +58,23 @@ const eventSchema = new mongoose.Schema({
         required: false,
         maxLength: 500
     },
+    color: {
+        type: String,
+        default: "#FFFFFF"
+    },
     date: {
         type: String,
         required: true
     },
-    color: {
+    recurrence: {
         type: String,
-        default: "#FFFFFF"
+        required: false,
+        enum: ["none", "daily", "weekly", "monthly"],
+        default: "none"
+    },
+    recurrenceEndDate: {
+        type: String, 
+        required: false
     }
 }, { timestamps: true });
 

@@ -7,7 +7,6 @@
 // IMPORTS
 // ===============================
 const User = require("../models/user.js");
-const calendarController = require("calendars.js");
 const utils = require("../utils/controllerFuncs.js");
 
 // ===============================
@@ -31,7 +30,7 @@ exports.updateUserById = async (req, res, next) => {
         }
 
         const userId = req.user._id;
-        const updatedUser = await Task.findOneAndUpdate(
+        const updatedUser = await User.findOneAndUpdate(
             { userId },
             { $set: updates },
             { new: true }
@@ -52,15 +51,15 @@ exports.updateUserById = async (req, res, next) => {
 // DELETE
 exports.deleteUserByid = async (req, res, next) => {
     try{
-        deletedUser = User.findOneAndDelete(
+        const deletedUser = await User.findOneAndDelete(
             { userId: req.user._id }
         );    
         
-        if (!deletedTask) {
-            return res.status(404).json({ message: "Task not found." });
+        if (!deletedUser) {
+            return res.status(404).json({ message: "User not found." });
         }
 
-        res.status(200).json({ message: "Task deleted successfully." });
+        res.status(200).json({ message: "User deleted successfully." });
     } catch (error) {
         next(error);
     }

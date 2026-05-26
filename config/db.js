@@ -4,8 +4,10 @@
 // Configures database, establishes mongoose connection and exports
 
 // ===============================
-// IMPORT MONGOOSE
+// IMPORT MONGOOSE + process.env
 // ===============================
+
+require("dotenv").config();
 const mongoose = require("mongoose"); 
 
 // ===============================

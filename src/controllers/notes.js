@@ -7,7 +7,7 @@
 // IMPORTS
 // ===============================
 const Note = require("../models/note.js");
-const utils = require("../utils/controllerFunctions.js");
+const utils = require("../utils/controllerFuncs.js");
 
 // ===============================
 // FUNCTIONS
@@ -24,7 +24,6 @@ exports.createNote = async (req, res, next) => {
             "pinned"
         ];
         const requiredFields = ["title"];
-
 
         const baseFields = { userId : req.user._id };
         const { resultFields, missing } = utils.checkCreateFields(
@@ -52,7 +51,7 @@ exports.createNote = async (req, res, next) => {
 // UPDATE BY ID
 exports.updateById = async (req, res, next) => {
     try {
-        const allowedFields = ["title", "subject", "description", "color", "completed", "dueDate", "recurrence", "recurrenceEndDate"];
+        const allowedFields = ["title", "subject", "body", "color", "pinned"];
 
         const updates = utils.checkPatchFields(
             req, allowedFields
@@ -63,15 +62,15 @@ exports.updateById = async (req, res, next) => {
             });
         }
 
-        const taskId = req.params.id;
+        const noteId = req.params.id;
         const userId = req.user._id;
-        const updatedTask = await Task.findOneAndUpdate(
-            { _id: taskId, userId },
+        const updatedNote = await Note.findOneAndUpdate(
+            { _id: noteId, userId },
             { $set: updates },
             { new: true }
         )
 
-        if (!updatedTask) {
+        if (!updatedNote) {
             return res.status(404).json({ message: "Note not found."});
         }
         
