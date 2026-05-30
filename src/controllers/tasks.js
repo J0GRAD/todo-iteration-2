@@ -40,10 +40,7 @@ exports.createTask = async (req, res, next) => {
         }
         const newTask = await Task.create(resultFields);
 
-        res.status(201).json({
-            message: "Task created successfully.",
-            newTask
-        });
+        res.redirect("/dashboard");
     } catch (error) {
         next(error);
     }
@@ -81,10 +78,7 @@ exports.updateById = async (req, res, next) => {
             return res.status(404).json({ message: "Task not found."});
         }
         
-        res.status(200).json({ 
-            message: "Task updated successfully.", 
-            updatedTask 
-        });
+        res.redirect("/dashboard");
     } catch (error) {
         next(error);
     }
@@ -103,7 +97,7 @@ exports.deleteById = async (req, res, next) => {
             return res.status(404).json({ message: "Task not found." });
         }
 
-        res.status(200).json({ message: "Task deleted successfully." });
+        res.redirect("/dashboard");
     } catch (error) {
         next(error);
     }

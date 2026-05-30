@@ -44,6 +44,12 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true,
         minlength: [8, "Password must be at least 8 characters!"]
+    },
+    visualMode: {
+        type: String,
+        enum: ["light", "dark"],
+        trim: true,
+        default: "dark"
     }
 }, { timestamps: true });
 
@@ -52,7 +58,7 @@ const userSchema = new mongoose.Schema({
 // ===============================
 
 // HASH BEFORE SAVING
-userSchema.pre("save", async function(next) {
+userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
     
     try {
@@ -69,7 +75,7 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
     try {
         return await bcrypt.compare(candidatePassword, this.password);
     } catch (error) {
-        next(error);
+        return false;
     }
 }
 

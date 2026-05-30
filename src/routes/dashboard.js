@@ -24,6 +24,11 @@ const ensureAuth = require("../middleware/ensure-auth.js");
 // ===============================
 
 // RENDER DASHBOARD
-router.get("/", ensureAuth, dashboardController.renderDashboard);
+router.get("/notes",    ensureAuth, dashboardController.renderDashboardNotes);
+router.get("/calendar", ensureAuth, dashboardController.renderDashboardCalendar);
+router.get("/settings", ensureAuth, dashboardController.renderSettings);
 
+// TBA
+// router.get("/analytics", ensureAuth, dashboardController.renderDashboardAnalytics); 
 
+module.exports = router;

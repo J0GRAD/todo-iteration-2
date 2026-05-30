@@ -45,25 +45,19 @@ exports.checkPatchFields = (
     return updates;
 }
 
-// GATHER DASHBOARD DATA
-exports.getDashboardData = async (
-    req
+// UPDATE USER FIELDS
+exports.patchUpdate = async (
+    req, model, allowedFields, filter
 ) => {
-    try {
-        const userId = req.user._id;
-        const calendarId = req.user.calendarId;
+    const updates = exports.checkPatchFields(req, allowedFields);
+    if (Object.keys(updates).length === 0) return { empty: true };
 
-        const [events, tasks, notes] = await Promise.all([
-            Event.find({ calendarId }),
-            Task.find({ userId }),
-            Note.find({ userId })
-        ])
+    const updatedUser = await model.findOneAndUpdate(
+        filter,
+        { $set: updates },
+        { new: true }
+    );
+    if (!updatedUser) return { empty: true };
 
-        return { userId, events, tasks, notes };
-    } catch (error) {
-        throw error; 
-    }
+    return { empty: false };
 }
-
-
-    

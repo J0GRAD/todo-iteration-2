@@ -4,7 +4,7 @@
 // Contains all error handlers used in server.js 
 
 // 404
-exports.notFound = (req, res) => {
+exports.notFound = (req, res, next) => {
     const error = new Error(`Not found - ${req.originalUrl}`);
     error.status = 404;
     next(error); // moves to global

@@ -19,7 +19,7 @@ passport.use(new LocalStrategy (
     async (identifier, password, done) => {
     try {
         const user = await User.findOne({
-            $or: [{ username: identifier, email: identifier }]
+            $or: [{ username: identifier }, { email: identifier }]
         }); // find user by email or name
         if (!user) return done(null, false, { message: "Incorrect username!"});
         
@@ -44,7 +44,7 @@ passport.serializeUser((user, done) => {
 // DESERIALIZE USER
 passport.deserializeUser(async (id, done) => {
     try {
-        const user = await User.findOneById(id).select("-password");
+        const user = await User.findById(id).select("-password");
         done(null, user);
     } catch (error) {
         done(error);

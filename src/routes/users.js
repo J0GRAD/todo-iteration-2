@@ -16,5 +16,10 @@ const ensureAuth = require("../middleware/ensure-auth.js");
 // ROUTES
 // ===============================
 
-router.patch  ("/:id", ensureAuth, userController.updateUserById);
-router.delete ("/:id", ensureAuth, userController.deleteUserById);
+router.patch  ("/profile",     ensureAuth, userController.updateProfile);
+router.patch  ("/email",       ensureAuth, userController.updateEmail);
+router.patch  ("/preferences", ensureAuth, userController.updatePreferences);
+router.patch  ("/password",    ensureAuth, userController.updatePassword);
+router.delete ("/delete",      ensureAuth, userController.deleteUserById);
+
+module.exports = router;

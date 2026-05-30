@@ -16,6 +16,8 @@ const ensureAuth = require("../middleware/ensure-auth.js");
 // ROUTES
 // ===============================
 
-router.post("/", ensureAuth, notesController.createNote);
-router.patch("/:id", ensureAuth, notesController.updateById);
+router.post  ("/",    ensureAuth, notesController.createNote);
+router.patch ("/:id", ensureAuth, notesController.updateById);
 router.delete("/:id", ensureAuth, notesController.deleteById);
+
+module.exports = router;

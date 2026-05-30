@@ -39,10 +39,7 @@ exports.createNote = async (req, res, next) => {
 
         const newNote = await Note.create(resultFields);
 
-        res.status(201).json({
-            message: "Note created successfully.",
-            newNote
-        });
+        res.redirect("/dashboard");
     } catch (error) {
         next(error);
     }
@@ -74,10 +71,7 @@ exports.updateById = async (req, res, next) => {
             return res.status(404).json({ message: "Note not found."});
         }
         
-        res.status(200).json({ 
-            message: "Note updated successfully.", 
-            updatedNote 
-        });
+        res.redirect("/dashboard");
     } catch (error) {
         next(error);
     }
@@ -97,7 +91,7 @@ exports.deleteById = async (req, res, next) => {
             return res.status(404).json({ message: "Note not found." });
         }
 
-        res.status(200).json({ message: "Note deleted successfully." });
+        res.redirect("/dashboard");
     } catch (error) {
         next(error);
     }

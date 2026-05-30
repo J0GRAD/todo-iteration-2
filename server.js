@@ -9,13 +9,15 @@
 // IMPORTS
 // ============================
 
-require("dotenv").config()
+require("dotenv").config();
+require("./config/passport.js");
 const express         = require("express");
 const session         = require("express-session");
 const MongoStore      = require("connect-mongo");
-const connectDatabase = require("config/db.js");
-const errorHandlers   = require("middleware/error-handlers.js");
-const passport        = require("passport-session");
+const connectDatabase = require("./config/db.js");
+const errorHandlers   = require("./middleware/error-handlers.js");
+const passport        = require("passport");
+const flash           = require("express-flash");
 
 // ============================
 // SET UP + CONFIGURATION
@@ -44,25 +46,26 @@ app.use(session({
 }));
 app.use(passport.initialize()); // attaches login() and logout() to user
 app.use(passport.session()); // deserializes all future requests from browser with session cookie
+app.use(flash()); // 
 
 // VIEWS
 app.set("view engine", "ejs"); // sets view engine to ejs
-app.set("views", "./views"); // sets views directory to "/views"
+app.set("views", "/src/views");
 
 // STATIC ASSETS
-app.use(express.statice("public")); // sets static directory to "/public"
+app.use(express.static("public")); // sets static directory to "/public"
 
 // ============================
 // ROUTING
 // ============================
 
 // IMPORTS
-const taskRoutes      = require("src/routes/tasks.js");
-const noteRoutes      = require("src/routes/notes.js");
-const eventRoutes     = require("src/routes/events.js");
-const userRoutes      = require("src/routes/users.js");
-const authRoutes      = require("src/routes/auth.js");
-const dashboardRoutes = require("src/routes/dashboard.js");
+const taskRoutes      = require("./src/routes/tasks.js");
+const noteRoutes      = require("./src/routes/notes.js");
+const eventRoutes     = require("./src/routes/events.js");
+const userRoutes      = require("./src/routes/users.js");
+const authRoutes      = require("./src/routes/auth.js");
+const dashboardRoutes = require("./src/routes/dashboard.js");
 
 // USE
 app.use("/auth", authRoutes);

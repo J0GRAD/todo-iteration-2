@@ -8,58 +8,107 @@
 // ===============================
 const User = require("../models/user.js");
 const utils = require("../utils/controllerFuncs.js");
+const bcrypt = require("bcrypt");
 
 // ===============================
 // FUNCTIONS
 // ===============================
 
 // PATCH
-exports.updateUserById = async (req, res, next) => {
+exports.updateProfile = async (req, res, next) => {
     try {
-        const allowedFields = [
-            "username",
-            "email", 
-            "password"
-        ];
-
-        const updates = utils.checkPatchFields(req, allowedFields);
-        if (Object.keys(updates).length === 0) {
+        const { empty } = await utils.patchUpdate(
+            req, 
+            User, 
+            ["username"], 
+            { _id: req.user._id }
+        );
+        if (empty) {
             return res.status(400).json({
-                message: "No valid fields provided."
+                message: "An error occured."
             });
         }
+        res.redirect("/dashboard");
+    } catch (error) {
+        next(error);
+    }
+}
 
-        const userId = req.user._id;
-        const updatedUser = await User.findOneAndUpdate(
-            { userId },
-            { $set: updates },
-            { new: true }
+exports.updatePreferences = async (req, res, next) => {
+    try {
+        const { empty } = await utils.patchUpdate(
+            req, 
+            User, 
+            ["visualMode"], 
+            { _id: req.user._id }
         );
-        if (!updatedUser) {
-            res.status(404).json({ message: "User not found." });
+        if (empty) {
+            return res.status(400).json({
+                message: "An error occured."
+            });
         }
+        res.redirect("/dashboard");
+    } catch (error) {
+        next(error); 
+    }
+}
 
-        res.status(200).json({
-            message: "User updated successfully.",
-            updatedUser
-        });
+exports.updateEmail = async (req, res, next) => {
+    try {
+        if (!req.body.email) {
+            return res.status(400).json({
+                message: "Please enter an email."
+            });
+        }
+        req.user.email = req.body.email;
+        await req.user.save();
+        
+        res.redirect("/dashboard");
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.updatePassword = async (req, res, next) => {
+    try {
+        const matches = await bcrypt.compare(
+            req.body.password,
+            req.user.password
+        )
+        if (!matches) {
+            return res.status(400).json({
+                message: "Incorrect password provided."
+            });
+        }
+        req.user.password = req.body.newPassword;
+        await req.user.save();
+
+        res.redirect("/dashboard");
     } catch (error) {
         next(error);
     }
 }
 
 // DELETE
-exports.deleteUserByid = async (req, res, next) => {
+exports.deleteUserById = async (req, res, next) => {
     try{
         const deletedUser = await User.findOneAndDelete(
-            { userId: req.user._id }
+            { _id: req.user._id }
         );    
-        
         if (!deletedUser) {
-            return res.status(404).json({ message: "User not found." });
+            res.redirect("/dashboard");
         }
 
-        res.status(200).json({ message: "User deleted successfully." });
+        req.logout((error) => {
+            if (error) return next(error);
+
+            req.session.destroy((error) => {
+                if (error) return next(error); 
+
+                res.clearCookie("connect-sid");
+                res.redirect("/login");
+            });
+        });
     } catch (error) {
         next(error);
     }
